@@ -43,7 +43,8 @@ python pacman.py
 
 ✅ **Laberinto dinámico** - Tablero diseñado con sistema de tiles  
 ✅ **Sistema de puntuación** - Acumula puntos al comer  
-✅ **4 Fantasmas inteligentes** - IA básica con movimiento aleatorio  
+✅ **4 Fantasmas con busqueda mejorada** - Fantasmas con algoritmo
+ sencillo de busqueda para experiencia mas retadora  
 ✅ **Colisión** - Detección de colisiones con fantasmas  
 ✅ **Gráficos retro** - Estilo arcade clásico con Turtle Graphics  
 
@@ -68,16 +69,102 @@ pacman.py
     └── setup(), listen(), done()
 ```
 
-## Ejercicios de Mejora
+## Caracteristicas mejoradas/implementadas
 
-El código incluye 5 ejercicios sugeridos:
 
-1. **Cambiar el tablero** - Modifica el array `tiles` para crear nuevos laberintos
-2. **Cambiar número de fantasmas** - Añade/elimina elementos en la lista `ghosts`
-3. **Cambiar posición inicial de Pac-Man** - Edita el vector `pacman`
-4. **Fantasmas más rápidos/lentos** - Ajusta el parámetro `ontimer(move, 100)`
-5. **Fantasmas más inteligentes** - Reemplaza la lógica `choice(options)` con algoritmo de búsqueda
+### 1. Fantasmas mas inteligentes! ✅
+Los fantasmas ahora pueden encontrar mejores caminos en x y y, siendo mas retador
+```python
+    for point, course in ghosts:
+        dx = pacman.x - point.x
+        dy = pacman.y - point.y
 
+        if abs(dx) > abs(dy):
+            preferred = vector(5*GHOST_SPEED_FACTOR if dx > 0 else -5*GHOST_SPEED_FACTOR, 0)
+        else:
+            preferred = vector(0, 5*GHOST_SPEED_FACTOR if dy > 0 else -5*GHOST_SPEED_FACTOR)
+
+        if valid(point + preferred):
+            course.x = preferred.x
+            course.y = preferred.y
+        elif valid(point + course):
+            pass
+        else:
+            options = [
+                vector(5*GHOST_SPEED_FACTOR, 0),
+                vector(-5*GHOST_SPEED_FACTOR, 0),
+                vector(0, 5*GHOST_SPEED_FACTOR),
+                vector(0, -5*GHOST_SPEED_FACTOR),
+            ]
+            plan = choice(options)
+            course.x = plan.x
+            course.y = plan.y
+
+        point.move(course)
+```
+
+### 2. Tablero mas grande y complicado... ✅
+Agregamos un tablero con una estructura mas dificil y expandida, modificable en cualquier momento...
+```python
+tiles = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0,
+    0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+]
+```
+
+### 3. Velocidad modificable para los fantasmas ✅
+Se agrego el **GHOST_SPEED_FACTOR** pudiendo hacer a los fantasmas mas rapidos o mas lentos de forma muy sencilla
+```python
+  ...
+  GHOST_SPEED_FACTOR = 0.6
+  ...
+      for point, course in ghosts:
+        dx = pacman.x - point.x
+        dy = pacman.y - point.y
+
+        if abs(dx) > abs(dy):
+            preferred = vector(5*GHOST_SPEED_FACTOR if dx > 0 else -5*GHOST_SPEED_FACTOR, 0)
+        else:
+            preferred = vector(0, 5*GHOST_SPEED_FACTOR if dy > 0 else -5*GHOST_SPEED_FACTOR)
+
+        if valid(point + preferred):
+            course.x = preferred.x
+            course.y = preferred.y
+        elif valid(point + course):
+            pass
+        else:
+            options = [
+                vector(5*GHOST_SPEED_FACTOR, 0),
+                vector(-5*GHOST_SPEED_FACTOR, 0),
+                vector(0, 5*GHOST_SPEED_FACTOR),
+                vector(0, -5*GHOST_SPEED_FACTOR),
+            ]
+            plan = choice(options)
+            course.x = plan.x
+            course.y = plan.y
+
+        point.move(course)
+  ...
+```
+ 
 ## Posibles Mejoras
 
 - 🎯 Implementar algoritmo A* para IA de fantasmas
@@ -86,23 +173,6 @@ El código incluye 5 ejercicios sugeridos:
 - 👻 Fantasmas con comportamientos diferenciados
 - 📊 Tabla de puntuaciones
 - 🎨 Temas personalizables
-
-## Ejemplo de Extensión: Fantasmas Más Inteligentes
-
-```python
-def smart_ghost(point, pacman):
-    """IA mejorada: fantasma persigue a Pac-Man."""
-    options = [
-        vector(5, 0),
-        vector(-5, 0),
-        vector(0, 5),
-        vector(0, -5),
-    ]
-    
-    # Elige la dirección más cercana a Pac-Man
-    best = min(options, key=lambda v: abs(point + v - pacman))
-    return best
-```
 
 ## Licencia
 
